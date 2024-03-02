@@ -32,8 +32,14 @@ class Prog::InstallRhizome < Prog::Base
 
     payload = tar.string.freeze
     sshable.cmd("tar xf -", stdin: payload)
+    clean_specs if frame["clean_specs"]
 
     hop_install_gems
+  end
+
+  # New method to handle spec cleanup
+  def clean_specs
+    sshable.cmd("find #{Config.root + '/rhizome/' + frame['target_folder']} -type f -name '*_spec.rb' -delete")
   end
 
   label def install_gems
