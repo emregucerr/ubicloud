@@ -7,6 +7,11 @@ class Prog::InstallRhizome < Prog::Base
   subject_is :sshable
 
   label def start
+    raise "target_folder is undefined or empty" if frame["target_folder"].nil? || frame["target_folder"].empty?
+    if !frame["install_specs"] && !frame["target_folder"].empty?
+      cleanup_specs_cmd = "find #{Config.root}/rhizome/#{frame["target_folder"]} -name '*_spec.rb' -exec rm {} \\;"
+      sshable.cmd(cleanup_specs_cmd)
+    end
     tar = StringIO.new
     Gem::Package::TarWriter.new(tar) do |writer|
       base = Config.root + "/rhizome"
